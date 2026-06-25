@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">⬅ Voltar para a Loja</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="painel login-container">
+            <h2>Faça seu Cadastro</h2>
+           
+            <form id="formLogin">
+                <input type="text" id="usuario" placeholder="Nome de Usuário" required>
+                <input type="password" id="senha" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+            </form>
+            <div id="mensagemErro" class="mensagem-erro"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('formLogin').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const erroDiv = document.getElementById('mensagemErro');
+
+            try {
+                const resposta = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, senha })
+                });
+
+                const dados = await resposta.json();
+
+                if (dados.sucesso) {
+                    sessionStorage.setItem('chaveMagica', dados.token);
+
+                    if (dados.papel === 'admin') {
+                        window.location.href = 'admin.html'; 
+                    } else {
+                        window.location.href = 'index.html'; 
+                    }
+                } else {
+                    erroDiv.innerText = dados.mensagem;
+                }
+            } catch (erro) {
+                erroDiv.innerText = "Erro ao tentar conjurar o login.";
+            }
+        });
+    </script>
+</body>
+</html>

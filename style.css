@@ -1,0 +1,303 @@
+:root {
+    --COR-PRINCIPAL-ESCURA: #1A1A19; 
+    --COR-FLORESTA-PROFUNDA: #1f3612;
+    --COR-MAGENTA: #843653;  
+    --COR-CREME-MAGICO: #F6FCDF;     
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+    color: var(--COR-CREME-MAGICO);
+    font-family: 'Gill Sans', 'Gill Sans MT';
+}
+
+nav {
+    background-color: var(--COR-FLORESTA-PROFUNDA);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    top: 0;
+    position: sticky;
+    z-index: 1000;
+    border-bottom: 2px solid var(--COR-MAGENTA);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.nav-links {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+ul li a {
+  display: block;
+  color: var(--COR-CREME-MAGICO);
+  padding: 14px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+ul li a:hover {
+    background-color: var(--COR-MAGENTA);
+    color: var(--COR-PRINCIPAL-ESCURA);
+}
+
+p {
+    font-family: 'Gill Sans', 'Gill Sans MT';
+    text-align: center;
+    color: var(--COR-CREME-MAGICO);
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+h1 {
+    font-family: 'Gill Sans';
+    color: var(--COR-CREME-MAGICO);
+    font-size: 3em;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    padding: 40px 20px;
+}
+
+h2 {
+    text-align: center;
+    color: var(--COR-MAGENTA);
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.sobre {
+    text-align: center;
+    min-height: 400px;
+    padding: 60px 20px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid var(--COR-MAGENTA);
+}
+
+.sobre::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(26, 26, 25, 0.85);
+    z-index: 1;
+}
+
+.sobre h2, .sobre p {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.sobre p {
+    font-size: 1.2em;
+}
+
+
+.produtos-section {
+    padding: 60px 20px;
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+}
+
+.grid-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.card-produto {
+    background-color: var(--COR-FLORESTA-PROFUNDA);
+    border: 2px solid var(--COR-MAGENTA);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-produto:hover {
+    transform: translateY(-8px);
+    border-color: var(--COR-CREME-MAGICO);
+    box-shadow: 0 10px 20px rgba(133, 159, 61, 0.3);
+}
+
+.card-produto h3 {
+    color: var(--COR-CREME-MAGICO);
+    margin: 10px 0;
+    font-size: 1.4em;
+}
+
+.card-produto p {
+    font-size: 0.95em;
+    margin-bottom: 15px;
+    min-height: 60px; 
+}
+
+.card-produto .preco {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--COR-CREME-MAGICO);
+    margin-bottom: 15px;
+}
+
+.imagem-pocao {
+    width: 100%;
+    height: 220px;               
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 15px;  
+    border: 1px solid var(--COR-MAGENTA);
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+}
+
+button, .btn-comprar {
+    background-color: var(--COR-MAGENTA);
+    border: 2px solid var(--COR-MAGENTA);
+    color: var(--COR-PRINCIPAL-ESCURA);
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+button:hover, .btn-comprar:hover {
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+    color: var(--COR-CREME-MAGICO);
+    border-color: var(--COR-CREME-MAGICO);
+}
+
+
+.painel {
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+    padding: 30px;
+    border-radius: 12px;
+    border: 2px solid var(--COR-MAGENTA);
+    margin-bottom: 30px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    background-color: #1f3612;
+}
+
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 20px 0;
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+    color: var(--COR-CREME-MAGICO);
+    border: 1px solid var(--COR-MAGENTA);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--COR-CREME-MAGICO);
+    box-shadow: 0 0 8px rgba(246, 252, 223, 0.3);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: var(--COR-CREME-MAGICO);
+}
+
+th, td {
+    border-bottom: 1px solid var(--COR-MAGENTA);
+    padding: 15px;
+    text-align: left;
+}
+
+th {
+    background-color: rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: var(--COR-MAGENTA);
+}
+
+.img-preview {
+    max-width: 60px;
+    border-radius: 6px;
+    border: 1px solid var(--COR-MAGENTA);
+    background-color: var(--COR-PRINCIPAL-ESCURA);
+}
+
+.btn-remover {
+    background-color: #631c1c; 
+    border-color: #631c1c;
+    color: var(--COR-CREME-MAGICO);
+    padding: 8px 15px;
+    font-size: 0.9em;
+    width: auto;
+}
+
+.btn-remover:hover {
+    background-color: #ff4d4d;
+    border-color: #ff4d4d;
+    color: var(--COR-PRINCIPAL-ESCURA);
+}
+
+.mensagem-erro {
+    color: #ff4d4d;
+    margin-top: 10px;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/* --- RODAPÉ --- */
+footer {
+    background-color: var(--COR-FLORESTA-PROFUNDA); 
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 2px solid var(--COR-MAGENTA);
+}
+
+footer p {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer ul li {
+    color: var(--COR-CREME-MAGICO);
+    margin: 5px 0;
+    font-size: 1em;
+}

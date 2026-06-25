@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script>
+        if (sessionStorage.getItem('chaveMagica') !== 'permissao_admin') {
+            alert("Acesso negado! Apenas o Mestre Alquimista pode entrar aqui.");
+            window.location.href = 'index.html';
+        }
+
+        function fazerLogout() {
+            sessionStorage.removeItem('chaveMagica');
+            window.location.href = 'index.html';
+        }
+    </script>
+</head>
+<body>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">⬅ Voltar para a Loja</a></li>
+            <li><a href="#" onclick="fazerLogout()">Sair</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Página do Administrador</h1>
+
+        <div class="painel">
+            <h2>Adicionar Nova Poção</h2>
+            <form id="formPocao">
+                <input type="text" id="nome" placeholder="Nome da Poção" required>
+                <textarea id="descricao" placeholder="Descrição dos efeitos mágicos..." required></textarea>
+                <input type="url" id="imagem" placeholder="URL da Imagem (Ex: https://site.com/pocao.jpg)" required>
+                <input type="number" id="preco" step="1" min="1" placeholder="Preço" required>
+                <button type="submit">Cadastrar Poção</button>
+            </form>
+        </div>
+
+        <div class="painel">
+            <h2>Estoque Atual</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Nome / Descrição</th>
+                        <th>Preço</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaPocoes">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/pocoes';
+
+        async function carregarPocoes() {
+            try {
+                const resposta = await fetch(API_URL);
+                const pocoes = await resposta.json();
+                
+                const tbody = document.getElementById('tabelaPocoes');
+                tbody.innerHTML = ''; 
+
+                pocoes.forEach(pocao => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><img src="${pocao.imagem}" class="img-preview" alt="Imagem vazia" onerror="this.src='https://via.placeholder.com/60/1a1a19/859f3d?text=?'"></td>
+                        <td><strong style="color: var(--COR-MUSGO-ACENTO); font-size: 1.1em;">${pocao.nome}</strong><br><small>${pocao.descricao}</small></td>
+                        <td>${pocao.preco.toFixed(2).replace('.', ',')} moedas</td>
+                        <td><button class="btn-remover" onclick="removerPocao(${pocao.id})">Remover</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (erro) {
+                console.error("Erro ao carregar poções:", erro);
+            }
+        }
+
+        document.getElementById('formPocao').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            
+            const novaPocao = {
+                nome: document.getElementById('nome').value,
+                descricao: document.getElementById('descricao').value,
+                imagem: document.getElementById('imagem').value,
+                preco: parseFloat(document.getElementById('preco').value)
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novaPocao)
+                });
+                
+                this.reset(); 
+                carregarPocoes(); 
+            } catch (erro) {
+                console.error("Erro ao salvar a poção:", erro);
+            }
+        });
+
+        async function removerPocao(id) {
+            if(confirm("Tem certeza que deseja banir esta poção do estoque?")) {
+                try {
+                    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                    carregarPocoes(); 
+                } catch (erro) {
+                    console.error("Erro ao deletar a poção:", erro);
+                }
+            }
+        }
+
+        carregarPocoes();
+    </script>
+</body>
+</html>

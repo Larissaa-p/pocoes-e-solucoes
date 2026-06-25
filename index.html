@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Poções e Soluções</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <nav>
+            <ul class="nav-links" >
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#produtos">Produtos</a></li>
+                <li><a href="#contato">Contato</a></li>
+                
+                <li id="nav-login"><a href="login.html">Login</a></li>
+                
+                <li id="nav-admin" style="display: none;"><a href="admin.html">Editar Poções</a></li>
+                <li id="nav-logout" style="display: none;"><a href="#" onclick="fazerLogout()">Sair</a></li>
+            </ul>
+        </nav>
+        <main id="inicio">
+            <h1 class="nome">Poções e Soluções</h1>
+            <section id="sobre" class="sobre"  style="background-image: url('gabrielle-nilsson-environment3b.jpg');">
+                    <h2>Sobre Nós</h2>
+                <p>Fundada em 1867, a Poções e Soluções se tornou 
+                    referência no ramo de poções mágicas. Com nossa loja localizada no Beco da Última Saída, começamos como um pequeno comércio que oferecia serviços apenas aos moradores locais.
+                    Agora, estamos expandindo para vendas online para atender às necessidades dos nossos clientes  
+                    onde quer que estejam.
+                </p>
+            </section>
+            <section id="produtos" class="produtos-section">
+        <div class="container">
+            <h2>Catálogo de Poções</h2>
+            
+            <div class="grid-produtos" id="gridPocoes">
+                <p style="text-align: center; width: 100%; color: #b5a4d4;">Carregando as poções...</p>
+            </div>
+        </div>
+    </section>
+        </main>
+        <footer id="contato">
+            <p class="contato">Contato:</p>
+            <ul>
+                <li>WhatsApp: (11)99999-9999 - Annabelle Merigold</li>
+                <li>E-mail: merigold@email.com</li>
+            </ul>
+        </footer>
+        
+        <script>
+            async function carregarPocoesLoja() {
+            try {
+                const resposta = await fetch('/api/pocoes');
+                const pocoes = await resposta.json();
+                
+                const grid = document.getElementById('gridPocoes');
+                grid.innerHTML = '';
+
+                if (pocoes.length === 0) {
+                    grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #b5a4d4;">Nenhuma poção disponível no estoque no momento.</p>';
+                    return;
+                }
+
+                pocoes.forEach(pocao => {
+                    const card = document.createElement('div');
+                    card.className = 'card-produto';
+                    
+                    card.innerHTML = `
+                        <img src="${pocao.imagem}" alt="${pocao.nome}" class="imagem-pocao" onerror="this.src='https://via.placeholder.com/200x200/38205c/d4af37?text=Sem+Imagem'">
+                        <h3>${pocao.nome}</h3>
+                        <p>${pocao.descricao}</p>
+                        <div class="preco"> ${pocao.preco} moedas</div>
+                        <button class="btn-comprar">Adicionar ao Carrinho</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (erro) {
+                console.error("Erro ao carregar poções da loja:", erro);
+                document.getElementById('gridPocoes').innerHTML = '<p style="text-align: center; color: red;">As energias mágicas falharam ao carregar o estoque.</p>';
+            }
+        }
+        carregarPocoesLoja();
+
+        function verificarLogin() {
+            const chave = sessionStorage.getItem('chaveMagica');
+            
+            if (chave === 'permissao_admin') {
+                if(document.getElementById('nav-admin')) document.getElementById('nav-admin').style.display = 'block';
+                if(document.getElementById('nav-logout')) document.getElementById('nav-logout').style.display = 'block';
+                if(document.getElementById('nav-login')) document.getElementById('nav-login').style.display = 'none';
+            } 
+            else if (chave === 'permissao_comum') {
+                if(document.getElementById('nav-admin')) document.getElementById('nav-admin').style.display = 'none';
+                if(document.getElementById('nav-logout')) document.getElementById('nav-logout').style.display = 'block';
+                if(document.getElementById('nav-login')) document.getElementById('nav-login').style.display = 'none';
+            }
+        }
+
+        function fazerLogout() {
+            sessionStorage.removeItem('chaveMagica'); 
+            window.location.reload(); 
+        }
+        verificarLogin();
+        </script>
+    </body>
+</html>
