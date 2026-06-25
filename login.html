@@ -15,19 +15,60 @@
     </nav>
 
     <div class="container">
-        <div class="painel login-container">
-            <h2>Faça seu Cadastro</h2>
+        <div class="painel login-container" id="painelLogin">
+            <h2>Entrar na Loja</h2>
+            <p style="margin-bottom: 20px;">Insira as suas credenciais para acessar.</p>
            
             <form id="formLogin">
-                <input type="text" id="usuario" placeholder="Nome de Usuário" required>
-                <input type="password" id="senha" placeholder="Senha" required>
+                <input type="text" id="usuario" placeholder="Nome de Usuário" autocomplete="username" required>
+                <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
                 <button type="submit">Entrar</button>
             </form>
+
+            <p style="margin-top: 20px; text-align: center; font-size: 0.95em;">
+                Não tem conta? <a href="#" onclick="alternarFormularios()" style="color: var(--COR-MAGENTA); font-weight: bold; text-decoration: underline;">Cadastre-se!</a>
+            </p>
+
             <div id="mensagemErro" class="mensagem-erro"></div>
         </div>
+
+        <div class="painel login-container" id="painelRegistrar" style="display: none;">
+            <h2>Nova Conta</h2>
+            <p style="margin-bottom: 20px;">Registre o seu nome.</p>
+            
+            <form id="formRegistrar">
+                <input type="text" id="novoUsuario" placeholder="Escolha um nome de usuário" autocomplete="username" required>
+                <input type="password" id="novaSenha" placeholder="Escolha uma senha" autocomplete="new-password" required>
+                <button type="submit">Concluir Cadastro</button>
+            </form>
+            
+            <p style="margin-top: 20px; text-align: center; font-size: 0.95em;">
+                Já tem uma conta? <a href="#" onclick="alternarFormularios()" style="color: var(--COR-MAGENTA); font-weight: bold; text-decoration: underline;">Faça Login!</a>
+            </p>
+            <div id="mensagemSucesso" style="color: #859F3D; margin-top: 10px; font-size: 1em; font-weight: bold; text-align: center;"></div>
+            <div id="mensagemErroRegistro" class="mensagem-erro" style="text-align: center;"></div>
+        </div>
+
     </div>
 
     <script>
+        function alternarFormularios() {
+            const painelLogin = document.getElementById('painelLogin');
+            const painelRegistrar = document.getElementById('painelRegistrar');
+
+            document.getElementById('mensagemErro').innerText = '';
+            document.getElementById('mensagemErroRegistro').innerText = '';
+            document.getElementById('mensagemSucesso').innerText = '';
+
+            if (painelLogin.style.display === 'none') {
+                painelLogin.style.display = 'block';
+                painelRegistrar.style.display = 'none';
+            } else {
+                painelLogin.style.display = 'none';
+                painelRegistrar.style.display = 'block';
+            }
+        }
+
         document.getElementById('formLogin').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -46,17 +87,52 @@
 
                 if (dados.sucesso) {
                     sessionStorage.setItem('chaveMagica', dados.token);
-
+                    
                     if (dados.papel === 'admin') {
-                        window.location.href = 'admin.html'; 
+                        window.location.href = 'admin.html';
                     } else {
-                        window.location.href = 'index.html'; 
+                        window.location.href = 'index.html';
                     }
                 } else {
                     erroDiv.innerText = dados.mensagem;
                 }
             } catch (erro) {
-                erroDiv.innerText = "Erro ao tentar conjurar o login.";
+                erroDiv.innerText = "Erro ao efetuar o login.";
+            }
+        });
+
+        document.getElementById('formRegistrar').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('novoUsuario').value;
+            const senha = document.getElementById('novaSenha').value;
+            const erroDiv = document.getElementById('mensagemErroRegistro');
+            const sucessoDiv = document.getElementById('mensagemSucesso');
+
+            erroDiv.innerText = '';
+            sucessoDiv.innerText = '';
+
+            try {
+                const resposta = await fetch('/api/registrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, senha })
+                });
+
+                const dados = await resposta.json();
+
+                if (dados.sucesso) {
+                    sucessoDiv.innerText = dados.mensagem;
+                    this.reset(); 
+
+                    setTimeout(() => {
+                        alternarFormularios();
+                    }, 2000);
+                } else {
+                    erroDiv.innerText = dados.mensagem;
+                }
+            } catch (erro) {
+                erroDiv.innerText = "Erro ao tentar efetuar o registro.";
             }
         });
     </script>

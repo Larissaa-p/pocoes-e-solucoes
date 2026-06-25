@@ -11,6 +11,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     </head>
     <body>
         <nav>
@@ -28,7 +29,7 @@
         </nav>
         <main id="inicio">
             <h1 class="nome">Poções e Soluções</h1>
-            <section id="sobre" class="sobre"  style="background-image: url('gabrielle-nilsson-environment3b.jpg');">
+            <section id="sobre" class="sobre"  style="background-image: url('/images/gabrielle-nilsson-environment3b.jpg');">
                     <h2>Sobre Nós</h2>
                 <p>Fundada em 1867, a Poções e Soluções se tornou 
                     referência no ramo de poções mágicas. Com nossa loja localizada no Beco da Última Saída, começamos como um pequeno comércio que oferecia serviços apenas aos moradores locais.
@@ -36,7 +37,7 @@
                     onde quer que estejam.
                 </p>
             </section>
-            <section id="produtos" class="produtos-section">
+            <section id="produtos" class="produtos-section" style="background-image: url('/images/image-1686123301-2300.jpg');">
         <div class="container">
             <h2>Catálogo de Poções</h2>
             
@@ -45,6 +46,23 @@
             </div>
         </div>
     </section>
+    <button class="btn-carrinho-flutuante" onclick="abrirCarrinho()">
+        🛒
+        <span class="badge-carrinho" id="contadorCarrinho">0</span>
+    </button>
+
+    <div class="modal-carrinho" id="modalCarrinho">
+        <div class="conteudo-carrinho">
+            <span class="fechar-modal" onclick="fecharCarrinho()">&times;</span>
+            <h2 style="font-size: 1.6em;">Seu Caldeirão de Compras</h2>
+            
+            <ul class="lista-itens-carrinho" id="listaItensCarrinho">
+                </ul>
+            
+            <div class="total-carrinho">Total: <span id="totalCarrinho">0,00 moedas</span></div>
+            <button style="margin-top: 25px;" onclick="alert('Pedido enviado aos elementais da entrega!')">Finalizar Pedido</button>
+        </div>
+    </div>
         </main>
         <footer id="contato">
             <p class="contato">Contato:</p>
@@ -55,16 +73,18 @@
         </footer>
         
         <script>
-            async function carregarPocoesLoja() {
+            const API_URL = '/api/pocoes';
+
+        async function carregarPocoesLoja() {
             try {
-                const resposta = await fetch('/api/pocoes');
+                const resposta = await fetch(API_URL);
                 const pocoes = await resposta.json();
-                
+               
                 const grid = document.getElementById('gridPocoes');
                 grid.innerHTML = '';
 
                 if (pocoes.length === 0) {
-                    grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: #b5a4d4;">Nenhuma poção disponível no estoque no momento.</p>';
+                    grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: var(--COR-MUSGO-ACENTO);">Nenhuma poção disponível no estoque no momento.</p>';
                     return;
                 }
 
@@ -73,41 +93,129 @@
                     card.className = 'card-produto';
                     
                     card.innerHTML = `
-                        <img src="${pocao.imagem}" alt="${pocao.nome}" class="imagem-pocao" onerror="this.src='https://via.placeholder.com/200x200/38205c/d4af37?text=Sem+Imagem'">
+                        <img src="${pocao.imagem}" alt="${pocao.nome}" class="imagem-potion imagem-pocao" onerror="this.src='https://via.placeholder.com/200x200/1a1a19/859f3d?text=?'">
                         <h3>${pocao.nome}</h3>
                         <p>${pocao.descricao}</p>
-                        <div class="preco"> ${pocao.preco} moedas</div>
-                        <button class="btn-comprar">Adicionar ao Carrinho</button>
+                        <div class="preco">${pocao.preco} moedas</div>
+                        <button class="btn-comprar" onclick="adicionarAoCarrinho('${pocao.nome.replace(/'/g, "\\'")}', ${pocao.preco})">Adicionar ao Carrinho</button>
                     `;
                     grid.appendChild(card);
                 });
             } catch (erro) {
                 console.error("Erro ao carregar poções da loja:", erro);
-                document.getElementById('gridPocoes').innerHTML = '<p style="text-align: center; color: red;">As energias mágicas falharam ao carregar o estoque.</p>';
+                document.getElementById('gridPocoes').innerHTML = '<p style="text-align: center; color: #ff4d4d;">As energias mágicas falharam ao carregar o estoque.</p>';
             }
         }
-        carregarPocoesLoja();
 
         function verificarLogin() {
             const chave = sessionStorage.getItem('chaveMagica');
-            
+            const navAdmin = document.getElementById('nav-admin');
+            const navLogout = document.getElementById('nav-logout');
+            const navLogin = document.getElementById('nav-login');
+
             if (chave === 'permissao_admin') {
-                if(document.getElementById('nav-admin')) document.getElementById('nav-admin').style.display = 'block';
-                if(document.getElementById('nav-logout')) document.getElementById('nav-logout').style.display = 'block';
-                if(document.getElementById('nav-login')) document.getElementById('nav-login').style.display = 'none';
+                if(navAdmin) navAdmin.style.display = 'inline-block';
+                if(navLogout) navLogout.style.display = 'inline-block';
+                if(navLogin) navLogin.style.display = 'none';
             } 
             else if (chave === 'permissao_comum') {
-                if(document.getElementById('nav-admin')) document.getElementById('nav-admin').style.display = 'none';
-                if(document.getElementById('nav-logout')) document.getElementById('nav-logout').style.display = 'block';
-                if(document.getElementById('nav-login')) document.getElementById('nav-login').style.display = 'none';
+                if(navAdmin) navAdmin.style.display = 'none';
+                if(navLogout) navLogout.style.display = 'inline-block';
+                if(navLogin) navLogin.style.display = 'none';
+            } 
+            else {
+                if(navAdmin) navAdmin.style.display = 'none';
+                if(navLogout) navLogout.style.display = 'none';
+                if(navLogin) navLogin.style.display = 'inline-block';
             }
         }
 
         function fazerLogout() {
-            sessionStorage.removeItem('chaveMagica'); 
-            window.location.reload(); 
+            sessionStorage.removeItem('chaveMagica');
+            window.location.reload();
         }
-        verificarLogin();
+
+        window.addEventListener('pageshow', function() {
+            verificarLogin();
+        });
+
+        let carrinho = JSON.parse(localStorage.getItem('carrinhoDePocoes')) || [];
+
+        function abrirCarrinho() {
+            document.getElementById('modalCarrinho').style.display = 'flex';
+            exibirItensCarrinho();
+        }
+
+        function fecharCarrinho() {
+            document.getElementById('modalCarrinho').style.display = 'none';
+        }
+
+        function adicionarAoCarrinho(nome, preco) {
+            const itemExistente = carrinho.find(item => item.nome === nome);
+            
+            if (itemExistente) {
+                itemExistente.quantidade += 1;
+            } else {
+                carrinho.push({ nome, preco, quantidade: 1 });
+            }
+            
+            salvarERefrescarCarrinho();
+            alert(`"${nome}" foi adicionada ao seu caldeirão de compras!`);
+        }
+
+        function removerDoCarrinho(nome) {
+            carrinho = carrinho.filter(item => item.nome !== nome);
+            salvarERefrescarCarrinho();
+            exibirItensCarrinho(); 
+        }
+
+        function salvarERefrescarCarrinho() {
+            localStorage.setItem('carrinhoDePocoes', JSON.stringify(carrinho));
+            atualizarContadorBadge();
+        }
+
+        function atualizarContadorBadge() {
+            const totalItens = carrinho.reduce((soma, item) => soma + item.quantidade, 0);
+            document.getElementById('contadorCarrinho').innerText = totalItens;
+        }
+
+        function exibirItensCarrinho() {
+            const lista = document.getElementById('listaItensCarrinho');
+            const totalSpan = document.getElementById('totalCarrinho');
+            lista.innerHTML = '';
+            
+            if (carrinho.length === 0) {
+                lista.innerHTML = '<li style="text-align: center; padding: 20px; opacity: 0.6;">O caldeirão está vazio...</li>';
+                totalSpan.innerText = '0,00 moedas';
+                return;
+            }
+
+            let totalGeral = 0;
+
+            carrinho.forEach(item => {
+                const totalItem = item.preco * item.quantidade;
+                totalGeral += totalItem;
+
+                const li = document.createElement('li');
+                li.className = 'item-carrinho';
+                li.innerHTML = `
+                    <div>
+                        <strong style="color: var(--COR-MUSGO-ACENTO);">${item.nome}</strong><br>
+                        <small style="color: var(--COR-CREME-MAGICO); opacity: 0.8;">${item.quantidade}x ${item.preco.toFixed(2).replace('.', ',')} moedas</small>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span>${totalItem}</span>
+                        <button class="btn-remover" style="padding: 3px 8px; width: auto; margin: 0; font-size: 0.8em;" onclick="removerDoCarrinho('${item.nome.replace(/'/g, "\\'")}')">❌</button>
+                    </div>
+                `;
+                lista.appendChild(li);
+            });
+
+            totalSpan.innerText = `${totalGeral} moedas`;
+        }
+
+        carregarPocoesLoja();
+        atualizarContadorBadge();
         </script>
     </body>
 </html>
